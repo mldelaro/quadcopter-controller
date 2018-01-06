@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         didStartTcpConnection = true;
-        runningTxMessage = "S";
+        runningTxMessage = "{\"command\": \"S\" }";
 
         btn_stopTcpConnect = (Button) findViewById(R.id.btn_stopTcpConnect);
         btn_startTcpConnect = (Button) findViewById(R.id.btn_startTcpConnect);
@@ -141,12 +141,12 @@ public class MainActivity extends AppCompatActivity {
             public boolean onTouch(View v, MotionEvent event) {
                 switch(event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        runningTxMessage = tcpMessage;
-                        editTxt_txClientMessage.setText(tcpMessage);
+                        runningTxMessage = "{\"command\": \"" + tcpMessage + "\" }";
+                        editTxt_txClientMessage.setText(runningTxMessage);
                         break;
                     case MotionEvent.ACTION_UP:
-                        runningTxMessage = "S";
-                        editTxt_txClientMessage.setText("S");
+                        runningTxMessage = "{\"command\": \"S\" }";
+                        editTxt_txClientMessage.setText(runningTxMessage);
                         break;
                 }
                 if(udpClient != null) {

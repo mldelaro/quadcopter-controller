@@ -3,12 +3,18 @@ package mldelaro.asu.edu.quadcoptercontroller;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.JsonReader;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 import mldelaro.asu.edu.quadcoptercontroller.client.udp.UdpClient;
 
@@ -44,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         didStartTcpConnection = true;
-        runningTxMessage = "{\"command\": \"S\" }";
+        runningTxMessage = "{\"command\":\"S\"}";
 
         btn_stopTcpConnect = (Button) findViewById(R.id.btn_stopTcpConnect);
         btn_startTcpConnect = (Button) findViewById(R.id.btn_startTcpConnect);
@@ -141,11 +147,11 @@ public class MainActivity extends AppCompatActivity {
             public boolean onTouch(View v, MotionEvent event) {
                 switch(event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        runningTxMessage = "{\"command\": \"" + tcpMessage + "\" }";
+                        runningTxMessage = "{\"command\":\"" + tcpMessage + "\"}";
                         editTxt_txClientMessage.setText(runningTxMessage);
                         break;
                     case MotionEvent.ACTION_UP:
-                        runningTxMessage = "{\"command\": \"S\" }";
+                        runningTxMessage = "{\"command\":\"S\"}";
                         editTxt_txClientMessage.setText(runningTxMessage);
                         break;
                 }
@@ -176,7 +182,16 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onProgressUpdate(String... params) {
             super.onProgressUpdate(params);
-            editTxt_rxHostMessage.setText(params[0]);
+            try {
+                Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                JsonParser jp = new JsonParser();
+                JsonElement je = jp.parse(params[0].trim());
+                String prettyJsonString = gson.toJson(je);
+                editTxt_rxHostMessage.setText(prettyJsonString);
+            } catch(Exception ex) {
+                editTxt_rxHostMessage.setText(params[0]);
+            }
+
             Log.d(this.getClass().getCanonicalName(), "Received from host: " + params[0]);
         }
     }

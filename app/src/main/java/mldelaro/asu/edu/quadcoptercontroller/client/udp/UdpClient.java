@@ -28,7 +28,7 @@ public class UdpClient {
         this.hostPort = hostPort;
         isListening = false;
         udpMessageListener = listener;
-        runningTxUdpMessage = "S";
+        runningTxUdpMessage = "{\"command\":\"S\"}";
         rxUdpMessage = "";
         Log.d("mldlog-UdpClientDriver", "Initializing udp client driver: " + hostIp + ":" + hostPort);
     }

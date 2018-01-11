@@ -190,9 +190,8 @@ public class MainActivity extends AppCompatActivity {
                 editTxt_rxHostMessage.setText(prettyJsonString);
             } catch(Exception ex) {
                 editTxt_rxHostMessage.setText(params[0]);
+                Log.d(this.getClass().getCanonicalName(), "Received malformed json from host: " + params[0]);
             }
-
-            Log.d(this.getClass().getCanonicalName(), "Received from host: " + params[0]);
         }
     }
 

@@ -16,11 +16,11 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
-import mldelaro.asu.edu.quadcoptercontroller.client.udp.UdpClient;
+import mldelaro.asu.edu.quadcoptercontroller.client.tcp.TcpClient;
 
 public class MainActivity extends AppCompatActivity {
 
-    private UdpClient udpClient;
+    private TcpClient tcpClient;
     private String runningTxMessage;
     private boolean didStartTcpConnection;
     private String runningTcpHostName;
@@ -81,15 +81,15 @@ public class MainActivity extends AppCompatActivity {
                 runningTcpHostPort = editTxt_hostPort.getText().toString();
                 runningTcpHostName = editTxt_hostName.getText().toString();
 
-                if(udpClient == null) {
+                if(tcpClient == null) {
 
-                    int udpHostPort = 0;
+                    int tcpHostPort = 0;
                     try {
-                         udpHostPort = Integer.valueOf(runningTcpHostPort);
+                         tcpHostPort = Integer.valueOf(runningTcpHostPort);
                     } catch (NumberFormatException ex) {
                         Toast toast = Toast.makeText(getApplicationContext(), "Failed to convert '" + runningTcpHostPort + "' to a number ", Toast.LENGTH_SHORT);
                         toast.show();
-                        udpHostPort = -1;
+                        tcpHostPort = -1;
                     }
                     if (Integer.valueOf(runningTcpHostPort) < 1025) {
                         Toast toast = Toast.makeText(getApplicationContext(), "Please bind to a port larger than 1024", Toast.LENGTH_SHORT);
@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
 
                         Toast toast = Toast.makeText(getApplicationContext(), "Connecting to " + runningTcpHostName + ":" + runningTcpHostPort, Toast.LENGTH_SHORT);
                         toast.show();
-                        new UdpConnectionTask().execute(runningTcpHostName, runningTcpHostPort);
+                        new TcpConnectionTask().execute(runningTcpHostName, runningTcpHostPort);
                     }
                 } else {
                     Toast toast = Toast.makeText(getApplicationContext(), "Connection already exists to " + runningTcpHostName + ":" + runningTcpHostPort, Toast.LENGTH_SHORT);
@@ -117,12 +117,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 editTxt_txClientMessage.setText("---");
-                if (udpClient != null) {
+                if (tcpClient != null) {
                     Toast toast = Toast.makeText(getApplicationContext(), "Stopping connection to " + runningTcpHostName + ":" + runningTcpHostPort, Toast.LENGTH_SHORT);
                     toast.show();
                     Log.d("mdlog-Main", "Stopping UDP connection...");
-                    udpClient.stopClient();
-                    udpClient = null;
+                    tcpClient.stopClient();
+                    tcpClient = null;
                 }
             }
         });
@@ -155,27 +155,27 @@ public class MainActivity extends AppCompatActivity {
                         editTxt_txClientMessage.setText(runningTxMessage);
                         break;
                 }
-                if(udpClient != null) {
-                    udpClient.sendMessage(runningTxMessage);
+                if(tcpClient != null) {
+                    tcpClient.sendMessage(runningTxMessage);
                 }
                 return false;
             }
         };
     }
 
-    public class UdpConnectionTask extends AsyncTask<String, String, UdpClient> {
+    public class TcpConnectionTask extends AsyncTask<String, String, TcpClient> {
         @Override
-        protected UdpClient doInBackground(String... params) {
-            Log.d("mdlog-UdpConnectionTask", "Creating UDP Client...");
-            udpClient = new UdpClient(params[0], Integer.parseInt(params[1]), new UdpClient.OnUdpMessageReceived() {
+        protected TcpClient doInBackground(String... params) {
+            Log.d("mdlog-TcpConnectionTask", "Creating TCP Client...");
+            tcpClient = new TcpClient(params[0], Integer.parseInt(params[1]), new TcpClient.OnTcpMessageReceived() {
                 @Override
-                public void udpMessageReceived(String message) {
-                    Log.d("mdlog-UdpConnectionTask", "Receiving UDP Message: " + message);
+                public void tcpMessageReceived(String message) {
+                    Log.d("mdlog-TcpConnectionTask", "Receiving TCP Message: " + message);
                     publishProgress(message);
                 }
             });
-            udpClient.udpClientDriver();
-            Log.d("mdlog-UdpConnectionTask", "Did create UDP Client...");
+            tcpClient.tcpClientDriver();
+            Log.d("mdlog-TcpConnectionTask", "Did create TCP Client...");
             return null;
         }
 

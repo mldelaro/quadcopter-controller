@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="numberDecimal"
-                android:text="192.168.1.138"
+                android:text="192.168.1.82"
                 android:enabled="false"
                 tools:layout_editor_absoluteX="153dp"
                 tools:layout_editor_absoluteY="5dp" />
